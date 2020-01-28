@@ -17,6 +17,9 @@ Comprendre le patching de binaire
 
 https://archive.emily.st/2015/01/27/reverse-engineering/
 
+86a <> 2154, on va remplacer des 86b 2155
+
+
 // Expliquer avec vos propres mots basé sur l'[exemple suivant](https://github.com/DavidJacobson/EasyCTF-2015-writeup/blob/master/binary_exploitation.md#buffering---80-pts)
 
 ## Prendre un binaire de votre choix et changer son comportement
