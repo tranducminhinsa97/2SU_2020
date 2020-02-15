@@ -17,10 +17,67 @@ Comprendre le patching de binaire
 
 https://archive.emily.st/2015/01/27/reverse-engineering/
 
-86a <> 2154, on va remplacer des 86b 2155
+
+
 
 
 // Expliquer avec vos propres mots basé sur l'[exemple suivant](https://github.com/DavidJacobson/EasyCTF-2015-writeup/blob/master/binary_exploitation.md#buffering---80-pts)
+
+
+L'output de la commande file program> L'output est different de ce qui est sur le tutorial parce que nous sommes sur Linux Debian.
+<img src="./screenshot/file.png">
+
+Le resultat de la commande ``` hexdump -C program | head -n 20. ``` est:
+
+<img src="./screenshot/hexdump_2.png">
+La colonne a gauche est l'offset en hexadecimal.
+La deuxieme colonne est le contenu de fichier en hexadecimal
+La colonne a gauche montre l'equivalent de contenu du fichier en ASCII.
+
+L'output de la commande string
+```
+poop
+Please input a word:
+That's correct!
+That's not correct!
+```
+On voit bien que le fichier dispose des strings et dispose le mot de passe en clair. Une obfuscation pour cacher les textes auraient été essentiel.
+
+Avec la commande ```objdump -S -l -C -F -t -w program | less``` , on peut voit bien l'adresse de la fonction is_valide 
+<img src="./screenshot/is_valid.png">
+
+Les trois premières instructions sont les commandes pour déclaration d'une fonction, ils enregistrent le vieux pointeur, trouve le nouveau pointeur  et puis vide le stack.
+
+Les 2 prochaines instructions sont pour la declaration de strcmp 
+
+Les instructions lea et mov apres appellent la fonction strcmp 
+
+On compare les valeur des deux strings et puis s'ils ne sont pas egaux, on passe a l'instruction 86a, et puis %eax est attribue a valeur 0x00. Si les strung sont egaux, la valeur  %eax est attribue a valeur 0x01.
+
+Les dernieres commandes sont pour retourner le resultat et retourne a la fonction main.
+
+On constate qu'il y a deux instructions similaires :
+```
+863: b8 01 00 00 00     mov $0x1, %eax
+86a: b8 00 00 00 00     mov $0x0, %eax
+```
+Donc on veut changer le resultat de la deuxieme instruction pour qu'il attribue toujours la valeur 0x01 a %eax, donc dans deux cas %eax sont toujours attribue a 0x01, donc le resultat de la fonction is_valid est toujours 1.
+
+Voici le resultat apres d'avoir utilise cette commande pour ecraser 0x01 au lieu de 0x00.
+86a(16) = 2154(10), donc on va remplacer l'adresse 86b dont 2155 en decimal.
+
+<img src="./screenshot/remplacer.png">
+On peut voir que le programme est attique et il dit que c'est toujours le bon mot de passe. 
+
+
+
+
+
+
+
+
+
+
 
 ## Prendre un binaire de votre choix et changer son comportement
 
