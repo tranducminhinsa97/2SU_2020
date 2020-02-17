@@ -102,13 +102,37 @@ http://www.devttys0.com/2011/05/reverse-engineering-firmware-linksys-wag120n/
 
 https://bootlin.com/blog/qemu-arm-directfb-demo/
 
-utiliser binwalk sur vmlinuz-qemu-arm-2.6.20
+### utiliser binwalk sur vmlinuz-qemu-arm-2.6.20. Expliquer ce que vous voyez. Qu'est ce qui peut etre intéressant d'un point de vue sécurité?
+J'ai extrait le fichier avec la commande ```binwalk -e nom_du_fichier``` . 
+Donc Binwalk permet de voir s'il y a des fichiers caches ou compressees (qu'on peut pas voire en utilisant les commandes comm gunzip ou tar) .
+On peut extraire les signatures, des fichiers executables, des cles de chiffrements. Donc l'attaquant peut eventuellement profiter de ce programme pour analyser ce genre de fichiers et trouver des informations important
 
-Expliquer ce que vous voyez. Qu'est ce qui peut etre intéressant d'un point de vue sécurité?
+### Retrouvez le pingouin de la démo qemu.
+J'ai applique la commande binwalk plusieurs fois et puis parcouru tous les repertoires et chemins possible. A partir de cpio-root je n'ai plus besoin d'extraire.
 
-Retrouvez le pingouin de la démo qemu.
+Le fichier de pingouin tux.png se trouve dans le chemin suivant ```/_vmlinuz-qemu-arm-2.6.20.extracted/_31B0.extracted/E7E0.extracted/cpio-root/usr/local/share/directfb-examples/tux.png```
+<img src="./screenshot/penguin.png">
 
-Essayez de patcher le fichier pour remplacer le pingouin par une autre image. Que ce passe-t-il?     
+J'ai utilise la commande ```binwalk E7E0  ``` . On peut trouver le fichier tux.png avec les informations suivantes:
+```2984412 0x2D89DC ASCII cpio archive (SVR4 with no CRC), file name: "/usr/local/share/directfb-examples/tux.png", file name length: "0x0000002B", file size: "0x00006050"```
+<img src="./screenshot/binwalk.png">
+
+Donc j'ai utilise la commande dd pour obtenir l'image de pengouin:
+
+``` dd if=E7E0 skip=2984568 count=24656 of=penguin.png bs=1 ``` 
+On obtient un image de pingouin. Les parametres sont obtenus a partir de :
+
+skip = 2984568 : l'adrsse de fichier suivant (3009224) - taille fichier (24656)"
+
+count = 24656(dec) = 0x00006050 (taille de fichier).
+<img src="./screenshot/error.png">
+
+
+
+### Essayez de patcher le fichier pour remplacer le pingouin par une autre image. Que ce passe-t-il?    
+
+La commande ```dd skip=2984568 count=24656 if=penguin1.png of=E7E0 bs=1 conv=notrunc``` ne marche pas.
+
 
 # TD3 \[Exploit\]
 
