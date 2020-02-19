@@ -99,22 +99,39 @@ Donc on peut pas remplacer le pengouin simplement avec la commande dd.
 # TD3 \[Exploit\] Double free
 ## Exploitation.
 On va tenter un programme simple: double_free.c
+Ce programme fait 2 fois la commande free sur le pointeur a. Pour eviter l'erreur "double free corruption", on fait un free pour b entre les 2 free de a.
+L'etat de fastbin est comme suivant :
+'a' freed.
+  ```head -> a -> tail```
 
+'b' freed.
 
-Ce programme fait 2 fois la commande free sur le pointeur a.
+  ```head -> b -> a -> tail```
+
+'a' freed again.
+
+  ```head -> a -> b -> a -> tail```
+
+'malloc' request for 'd'.
+
+  ```head -> b -> a -> tail [ 'a' is returned ]```
+
+'malloc' request for 'e'.
+
+  ```head -> a -> tail [ 'b' is returned ]```
+
+'malloc' request for 'f'.
+
+  ```head -> tail [ 'a' is returned ]```
+Donc on peut voir que d et f point sur le meme pointeur. On peut modifier l'autre pointeur pour avoir une execution d'une fonction d'attaque. 
 
 ## Pour se proteger de cette erreur
-Lors du développement : propreté du source (utiliser malloc/free le plus possible, utiliser les fonctions n comme strncpy pour vérifier les limites...), utilisation de librairies de développement spécialisée contre les buffers overflow (comme la défunte Libsafe d'Avayalabs)
-
-Utiliser un langage n'autorisant pas ce type d'attaques : Java, Cyclone (qui est issu du C).
-
-Utiliser des logiciels spécialisés dans la vérification de code source, comme par exemple Qaudit ou Flawfinder.
-
-Auditer le programme compilé à l'aide d'outils tels que BFBTester.
-
-Appliquer le plus rapidement possible les patchs fournis par les développeurs.
-
+#### Heap Memory
+Lors du développement : propreté du source (utiliser malloc/free le plus possible, utiliser les fonctions n comme strncpy pour vérifier les limites...), utilisation de librairies de développement spécialisée contre les buffers overflow 
+Utiliser des logiciels spécialisés pour la vérification de code source
+Choisir un langage de programmation qui n'a pas ce type d'attaque, par exempleJava.
 Fiabiliser l'OS pour qu'il ne soit pas vulnérable aux débordement de buffer, par exemple : grsecurity pour Linux.
 
+#### Double Free
 Pour éviter l'exploitation de double free, il faut attribuer le pointeur a NULL le pointeur avant libérer. Quand on fait cela, il ne contient plus l'ancienne adresse et si un deuxième free arrive cela ne dommage rien car on peut pas liberer un pointeur NULL.
 
