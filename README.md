@@ -95,3 +95,26 @@ La commande ```dd skip=2984568 count=24656 if=penguin1.png of=E7E0 bs=1 conv=not
 
 <img src="./screenshot/error.png">
 Donc on peut pas remplacer le pengouin simplement avec la commande dd.
+
+# TD3 \[Exploit\] Double free
+## Exploitation.
+On va tenter un programme simple: double_free.c
+
+
+Ce programme fait 2 fois la commande free sur le pointeur a.
+
+## Pour se proteger de cette erreur
+Lors du développement : propreté du source (utiliser malloc/free le plus possible, utiliser les fonctions n comme strncpy pour vérifier les limites...), utilisation de librairies de développement spécialisée contre les buffers overflow (comme la défunte Libsafe d'Avayalabs)
+
+Utiliser un langage n'autorisant pas ce type d'attaques : Java, Cyclone (qui est issu du C).
+
+Utiliser des logiciels spécialisés dans la vérification de code source, comme par exemple Qaudit ou Flawfinder.
+
+Auditer le programme compilé à l'aide d'outils tels que BFBTester.
+
+Appliquer le plus rapidement possible les patchs fournis par les développeurs.
+
+Fiabiliser l'OS pour qu'il ne soit pas vulnérable aux débordement de buffer, par exemple : grsecurity pour Linux.
+
+Pour éviter l'exploitation de double free, il faut attribuer le pointeur a NULL le pointeur avant libérer. Quand on fait cela, il ne contient plus l'ancienne adresse et si un deuxième free arrive cela ne dommage rien car on peut pas liberer un pointeur NULL.
+
