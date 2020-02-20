@@ -57,27 +57,8 @@ http://www.devttys0.com/2011/05/reverse-engineering-firmware-linksys-wag120n/
 https://bootlin.com/blog/qemu-arm-directfb-demo/
 
 ### utiliser binwalk sur vmlinuz-qemu-arm-2.6.20. Expliquer ce que vous voyez. Qu'est ce qui peut etre intéressant d'un point de vue sécurité?
-<<<<<<< HEAD
-
-
 ### Retrouvez le pingouin de la démo qemu.
-
-
-=======
-
-
-### Retrouvez le pingouin de la démo qemu.
->>>>>>> 5257b476ce6b870abad40719d2378d5db5c82ece
-
-
-
 ### Essayez de patcher le fichier pour remplacer le pingouin par une autre image. Que ce passe-t-il?    
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 5257b476ce6b870abad40719d2378d5db5c82ece
-
 
 # TD3 \[Exploit\]
 

