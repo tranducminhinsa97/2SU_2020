@@ -4,14 +4,49 @@ https://bitbucket.org/whitewand/2su_2020/src
 
 # Questions
 ```
-- Quels sont les chemins d'attaque possibles sur la signature d'un système embarqué?
-- A quoi sert la chaine de confiance? Pourquoi est-elle nécessaire?
-- Décrire la méthode pour aborder la sécurité sur un produit embarqué. Pourquoi établir un modèle d'attaquant est-il important?
-- Trouver un moyen rapide de faire du debug embarqué (par exemple sur cible ARM)? Expliquer les avantages
+Quels sont les chemins d'attaque possibles sur la signature d'un système embarqué?
+```
+-Trouver la cle prive (cas Sony Playstation).
+-Reverse engineering.
+-Attaque physique.
+-Avec man in the middle, l'attaqueur peut remplacer la cle publique par sa propre cle publique. 
+-Attaque bit-flip
+```
+A quoi sert la chaine de confiance? Pourquoi est-elle nécessaire?
+```
+La chaine de confiance permet d'assurer la sécurité sur plusieurs couches d'un systeme. 
+On peut savoir par où vont les informations, pour savoir ou qu'il faut mettre les contrôles. S'il y a une faille sur une couche de haut niveau, la securite sont appliquee pour eviter la descente au couche inferieur.
+```
+Décrire la méthode pour aborder la sécurité sur un produit embarqué. Pourquoi établir un modèle d'attaquant est-il important?
+```
+- Il faut comprendre ce qu'on veut faire pour la sécurité sur notre produit. 
+- Il faut comprendre ce que l'attaqueur veut exploiter sur notre produit.
+- Realiser des attaques nous meme pour comprendre les chemins d'attaque possibles. Et donc s'informer sur le besoin de la securite.
+- Mettre en place les facons de securiser notre probleme, tester regulierement la securite de notre produit, et faire des patchs pour reparer des failles.
+
+```
+Trouver un moyen rapide de faire du debug embarqué (par exemple sur cible ARM)? Expliquer les avantages
+```
+Utiliser une emulation. On peut mettre des pointbreaks, voir les memoires utilises, tester le fonctionnement d'une fonction. 
+
+```
 - Lister les catégories de bug possibles et comment les exploiter et les défendre
+```
+Stack /heapbuffer overflow: tableau static et puis acces a une zone memoire non definie: utiliser pour executer une partie de code cachee. ==> Solution : verifier les bornes, free a chaque fois qu'on fait malloc.
+
+Fuzzing testing: Trouver les vulnabilites dans le programme. 
+
+Analyseur de code (statique)
+
+Reverse engineering : On peut trouver des informations importantes dans le code, comprendre les fonctions d'un programme et puis modifier le programme pour changer le fonctionnement du systeme. (Example dans le TD1 on a casse la fonction pour identifier si on a un bon mdp.)
+==> Solution: obfuscation. Ou si on a besoin de stocker les donnees sensitives on peut le stocker sur un serveur. 
+
+```
 - Quelles idées pour améliorer la sécurité en embarqué? (IA, Anti-debug, Obfuscation, Crypto ...) Choisissez une idée, chercher si elle existe et développer en quelques phrases quel avantage elle apporte et ses limites
 ```
-
+L'obfuscation: 
+- Avantage: Empecher hacker de comprendre le code par les analyse objdump ou hexdump et puis/ remonter au code source. 
+- Limites: Impossible de faire le debug.
 
 # TD1: \[Reverse engineering\]
 
@@ -151,3 +186,5 @@ procselfmem 1800000000
 $ cat out/dirtyCow/foo
 m00000000000000000
 ```
+
+Donc en lancant ce programme, on peut ecraser le fichier foo, donc on a le droit de root.Avec cette vulnérabilité on peut faire des accès en écriture à des zones mémoire accessibles en mode lecture seule.  Donc en tant qu'utilisateur root, on peut eventuellement faire ce qu'on veut sur le systeme.
