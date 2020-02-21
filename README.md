@@ -188,3 +188,40 @@ m00000000000000000
 ```
 
 Donc en lancant ce programme, on peut ecraser le fichier foo, donc on a le droit de root.Avec cette vulnérabilité on peut faire des accès en écriture à des zones mémoire accessibles en mode lecture seule.  Donc en tant qu'utilisateur root, on peut eventuellement faire ce qu'on veut sur le systeme.
+
+# TD9[Crypto] : Signature
+
+### Creation d'une signature3
+J'ai cree une paire de signature en utilisant la commande openssl -genrsa
+```
+openssl genrsa -aes128 -passout pass:<mdp> -out private.pem 4096
+openssl rsa -in private.pem -passin pass:<mdp> -pubout -out public.pem
+```
+Pour genere une signature d'un fichier data.txt. Le fichier signe est stocke dans /tmp/sign.sha256
+```
+openssl dgst -sha256 -sign private.pem -out /tmp/sign.sha256 data.txt 
+```
+On peut le convertir en base64
+```
+openssl base64 -in /tmp/sign.sha256 -out <signature>
+```
+Pour verifier le fichier signature 
+```
+openssl base64 -d -in signature -out /tmp/sign.sha256
+openssl dgst -sha256 -verify public.pem -signature /tmp/sign.sha256 data.txt
+
+```
+On obtient le resultat : Verification OK
+<img src=./screenshot/signature.png img/>
+
+### En quoi la signature peut protéger dans un contexte embarqué?
+La signature est utilise pour verifier la non-repudiation et l'authentification d'un fichier. Cela nous permet de verifier si le programme est ecrit par un developpeur "connu et certifie" par un centre d'authentification. Si on veut faire des changements sur les fichiers on doit avoir la bonne signature.  Cela empeche des faux signatures.
+
+### Comment protéger l'update d'un firmware?
+On protege l'update d'un firmware en utilisant la cle publique stocke sur l'appareil. On doit verifier la signature pour savoir si c'est un update d'un bon developpeur. Cela nous aide de detecter si la signature est bonne pour eviter les programmes non/faux signees. 
+
+A chaque nouvel update on doit assurer que c'est authentifie avant l'installation.
+
+
+
+
